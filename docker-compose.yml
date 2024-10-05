@@ -1,0 +1,27 @@
+services:
+  db:
+    container_name: mysql-container-new
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fraud_detection_db
+
+  app:
+    build: .
+    container_name: jupyter-app
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./:/app"
+    depends_on:
+      - db
+    command: jupyter lab --ip=0.0.0.0 --no-browser --allow-root
+
+  test:
+    build: .
+    container_name: pytest-container
+    command: pytest tests/
+    depends_on:
+      - db
